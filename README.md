@@ -15,7 +15,8 @@ tensorflow-gpu==1.13.1
 keras==2.1.5  
 ### 文件下载
 训练所需的essay_mobilenet_ssd_weights可以在百度云下载。  
-
+链接: https://pan.baidu.com/s/1YlD2KAZTv581YSWkC3_ZGg  
+提取码: dvau  
 ### 训练步骤
 1、本文使用VOC格式进行训练。  
 2、训练前将标签文件放在VOCdevkit文件夹下的VOC2007文件夹下的Annotation中。  
