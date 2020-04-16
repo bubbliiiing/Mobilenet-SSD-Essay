@@ -1,5 +1,8 @@
-## Mobilenet-SSD：轻量级目标检测模型在Keras当中的实现
+## Mobilenet-SSD：轻量级目标检测模型在Keras当中的实现（论文版）
 ---
+
+### 嘟嘟嘟为什么要再弄一个版本的Mobilenet-SSD
+之前实现了一个版本的mobilenet-SSD，有小伙伴告诉我说这个不是原版的Mobilenet-ssd的结构，然后我去网上查了一下，好像还真不是，原版的Mobilenet-ssd不利用38x38的特征层进行回归预测和分类预测，因此我就制作了这个版本，填一下坑。
 
 ### 目录
 1. [所需环境 Environment](#所需环境)
@@ -11,9 +14,8 @@
 tensorflow-gpu==1.13.1  
 keras==2.1.5  
 ### 文件下载
-训练所需的mobilenet_ssd_weights可以在百度云下载。  
-链接: https://pan.baidu.com/s/16zUKzO14W4C57rfvs-8TNg  
-提取码: n9py  
+训练所需的essay_mobilenet_ssd_weights可以在百度云下载。  
+
 ### 训练步骤
 1、本文使用VOC格式进行训练。  
 2、训练前将标签文件放在VOCdevkit文件夹下的VOC2007文件夹下的Annotation中。  
