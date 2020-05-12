@@ -112,7 +112,7 @@ def mobilenet(input_tensor):
     net['conv8_2'] = conv2d_bn(net['conv8_1'], 256, 3, 3, stride=2)
 
     # Block 9
-    # 3,3,256 -> 1,1,256
+    # 2,2,256 -> 1,1,128
     net['conv9_1'] = conv2d_bn(net['conv8_2'], 64, 1, 1)
     net['conv9_2'] = conv2d_bn(net['conv9_1'], 128, 3, 3, stride=2)
     #----------------------------主干特征提取网络结束---------------------------#
