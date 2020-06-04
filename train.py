@@ -36,7 +36,7 @@ if __name__ == "__main__":
     num_train = len(lines) - num_val
     
     model = SSD300(input_shape, num_classes=NUM_CLASSES)
-    model.load_weights('model_data/mobilenet_ssd_weights.h5', by_name=True, skip_mismatch=True)
+    model.load_weights('model_data/essay_mobilenet_ssd_weights.h5', by_name=True, skip_mismatch=True)
     # 训练参数设置
     logging = TensorBoard(log_dir=log_dir)
     checkpoint = ModelCheckpoint(log_dir + 'ep{epoch:03d}-loss{loss:.3f}-val_loss{val_loss:.3f}.h5',
