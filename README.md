@@ -5,11 +5,17 @@
 之前实现了一个版本的mobilenet-SSD，有小伙伴告诉我说这个不是原版的Mobilenet-ssd的结构，然后我去网上查了一下，好像还真不是，原版的Mobilenet-ssd不利用38x38的特征层进行回归预测和分类预测，因此我就制作了这个版本，填一下坑。
 
 ### 目录
-1. [所需环境 Environment](#所需环境)
-2. [文件下载 Download](#文件下载)
-3. [预测步骤 How2predict](#预测步骤)
-4. [训练步骤 How2train](#训练步骤)
-5. [参考资料 Reference](#Reference)
+1. [性能情况 Performance](#性能情况)
+2. [所需环境 Environment](#所需环境)
+3. [文件下载 Download](#文件下载)
+4. [预测步骤 How2predict](#预测步骤)
+5. [训练步骤 How2train](#训练步骤)
+6. [参考资料 Reference](#Reference)
+
+### 性能情况
+| 训练数据集 | 权值文件名称 | 测试数据集 | 输入图片大小 | mAP 0.5:0.95 | mAP 0.5 |
+| :-----: | :-----: | :------: | :------: | :------: | :-----: |
+| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 74.82
 
 ### 所需环境
 tensorflow-gpu==1.13.1  
