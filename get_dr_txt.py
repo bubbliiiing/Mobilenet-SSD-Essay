@@ -65,7 +65,7 @@ if not os.path.exists("./input/images-optional"):
 for image_id in tqdm(image_ids):
     image_path = "./VOCdevkit/VOC2007/JPEGImages/"+image_id+".jpg"
     image = Image.open(image_path)
-    image.save("./input/images-optional/"+image_id+".jpg")
+    # image.save("./input/images-optional/"+image_id+".jpg")
     ssd.detect_image(image_id,image)
     
 
