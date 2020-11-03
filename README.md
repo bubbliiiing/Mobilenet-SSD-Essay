@@ -15,7 +15,7 @@
 ### 性能情况
 | 训练数据集 | 权值文件名称 | 测试数据集 | 输入图片大小 | mAP 0.5:0.95 | mAP 0.5 |
 | :-----: | :-----: | :------: | :------: | :------: | :-----: |
-| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 74.82
+| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 76.78
 
 ### 所需环境
 tensorflow-gpu==1.13.1  
