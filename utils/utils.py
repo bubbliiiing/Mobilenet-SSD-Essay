@@ -1,8 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from PIL import Image
-import keras
-from keras import backend as K
+
 def letterbox_image(image, size):
     iw, ih = image.size
     w, h = size
@@ -13,8 +12,8 @@ def letterbox_image(image, size):
     image = image.resize((nw,nh), Image.BICUBIC)
     new_image = Image.new('RGB', size, (128,128,128))
     new_image.paste(image, ((w-nw)//2, (h-nh)//2))
-    x_offset,y_offset = (w-nw)//2/300, (h-nh)//2/300
-    return new_image,x_offset,y_offset
+
+    return new_image
 
 def ssd_correct_boxes(top, left, bottom, right, input_shape, image_shape):
     new_shape = image_shape*np.min(input_shape/image_shape)
@@ -39,99 +38,6 @@ def ssd_correct_boxes(top, left, bottom, right, input_shape, image_shape):
     boxes *= np.concatenate([image_shape, image_shape],axis=-1)
     return boxes
 
-
-def cosine_decay_with_warmup(global_step,
-                             learning_rate_base,
-                             total_steps,
-                             warmup_learning_rate=0.0,
-                             warmup_steps=0,
-                             hold_base_rate_steps=0,
-                             min_learn_rate=0,
-                             ):
-    """
-    参数：
-            global_step: 上面定义的Tcur，记录当前执行的步数。
-            learning_rate_base：预先设置的学习率，当warm_up阶段学习率增加到learning_rate_base，就开始学习率下降。
-            total_steps: 是总的训练的步数，等于epoch*sample_count/batch_size,(sample_count是样本总数，epoch是总的循环次数)
-            warmup_learning_rate: 这是warm up阶段线性增长的初始值
-            warmup_steps: warm_up总的需要持续的步数
-            hold_base_rate_steps: 这是可选的参数，即当warm up阶段结束后保持学习率不变，知道hold_base_rate_steps结束后才开始学习率下降
-    """
-    if total_steps < warmup_steps:
-        raise ValueError('total_steps must be larger or equal to '
-                            'warmup_steps.')
-    #这里实现了余弦退火的原理，设置学习率的最小值为0，所以简化了表达式
-    learning_rate = 0.5 * learning_rate_base * (1 + np.cos(np.pi *
-        (global_step - warmup_steps - hold_base_rate_steps) / float(total_steps - warmup_steps - hold_base_rate_steps)))
-    #如果hold_base_rate_steps大于0，表明在warm up结束后学习率在一定步数内保持不变
-    if hold_base_rate_steps > 0:
-        learning_rate = np.where(global_step > warmup_steps + hold_base_rate_steps,
-                                    learning_rate, learning_rate_base)
-    if warmup_steps > 0:
-        if learning_rate_base < warmup_learning_rate:
-            raise ValueError('learning_rate_base must be larger or equal to '
-                                'warmup_learning_rate.')
-        #线性增长的实现
-        slope = (learning_rate_base - warmup_learning_rate) / warmup_steps
-        warmup_rate = slope * global_step + warmup_learning_rate
-        #只有当global_step 仍然处于warm up阶段才会使用线性增长的学习率warmup_rate，否则使用余弦退火的学习率learning_rate
-        learning_rate = np.where(global_step < warmup_steps, warmup_rate,
-                                    learning_rate)
-
-    learning_rate = max(learning_rate,min_learn_rate)
-    return learning_rate
-
-
-class WarmUpCosineDecayScheduler(keras.callbacks.Callback):
-    """
-    继承Callback，实现对学习率的调度
-    """
-    def __init__(self,
-                 learning_rate_base,
-                 total_steps,
-                 global_step_init=0,
-                 warmup_learning_rate=0.0,
-                 warmup_steps=0,
-                 hold_base_rate_steps=0,
-                 min_learn_rate=0,
-                 verbose=0):
-        super(WarmUpCosineDecayScheduler, self).__init__()
-        # 基础的学习率
-        self.learning_rate_base = learning_rate_base
-        # 总共的步数，训练完所有世代的步数epochs * sample_count / batch_size
-        self.total_steps = total_steps
-        # 全局初始化step
-        self.global_step = global_step_init
-        # 热调整参数
-        self.warmup_learning_rate = warmup_learning_rate
-        # 热调整步长，warmup_epoch * sample_count / batch_size
-        self.warmup_steps = warmup_steps
-        self.hold_base_rate_steps = hold_base_rate_steps
-        # 参数显示  
-        self.verbose = verbose
-        # learning_rates用于记录每次更新后的学习率，方便图形化观察
-        self.min_learn_rate = min_learn_rate
-        self.learning_rates = []
-	#更新global_step，并记录当前学习率
-    def on_batch_end(self, batch, logs=None):
-        self.global_step = self.global_step + 1
-        lr = K.get_value(self.model.optimizer.lr)
-        self.learning_rates.append(lr)
-	#更新学习率
-    def on_batch_begin(self, batch, logs=None):
-        lr = cosine_decay_with_warmup(global_step=self.global_step,
-                                      learning_rate_base=self.learning_rate_base,
-                                      total_steps=self.total_steps,
-                                      warmup_learning_rate=self.warmup_learning_rate,
-                                      warmup_steps=self.warmup_steps,
-                                      hold_base_rate_steps=self.hold_base_rate_steps,
-                                      min_learn_rate = self.min_learn_rate)
-        K.set_value(self.model.optimizer.lr, lr)
-        if self.verbose > 0:
-            print('\nBatch %05d: setting learning '
-                  'rate to %s.' % (self.global_step + 1, lr))
-
-
 class BBoxUtility(object):
     def __init__(self, num_classes, priors=None, overlap_threshold=0.5,
                  nms_thresh=0.45, top_k=400):
@@ -143,32 +49,8 @@ class BBoxUtility(object):
         self._top_k = top_k
         self.boxes = tf.placeholder(dtype='float32', shape=(None, 4))
         self.scores = tf.placeholder(dtype='float32', shape=(None,))
-        self.nms = tf.image.non_max_suppression(self.boxes, self.scores,
-                                                self._top_k,
-                                                iou_threshold=self._nms_thresh)
+        self.nms = tf.image.non_max_suppression(self.boxes, self.scores, self._top_k, iou_threshold=self._nms_thresh)
         self.sess = tf.Session(config=tf.ConfigProto(device_count={'GPU': 0}))
-
-    @property
-    def nms_thresh(self):
-        return self._nms_thresh
-
-    @nms_thresh.setter
-    def nms_thresh(self, value):
-        self._nms_thresh = value
-        self.nms = tf.image.non_max_suppression(self.boxes, self.scores,
-                                                self._top_k,
-                                                iou_threshold=self._nms_thresh)
-
-    @property
-    def top_k(self):
-        return self._top_k
-
-    @top_k.setter
-    def top_k(self, value):
-        self._top_k = value
-        self.nms = tf.image.non_max_suppression(self.boxes, self.scores,
-                                                self._top_k,
-                                                iou_threshold=self._nms_thresh)
 
     def iou(self, box):
         # 计算出每个真实框与所有的先验框的iou
@@ -190,64 +72,99 @@ class BBoxUtility(object):
         return iou
 
     def encode_box(self, box, return_iou=True):
+        # 计算当前真实框和先验框的重合情况
         iou = self.iou(box)
         encoded_box = np.zeros((self.num_priors, 4 + return_iou))
-
+        
         # 找到每一个真实框，重合程度较高的先验框
         assign_mask = iou > self.overlap_threshold
+
+        # 如果没有一个先验框重合度大于self.overlap_threshold
+        # 则选择重合度最大的为正样本
         if not assign_mask.any():
             assign_mask[iou.argmax()] = True
+        
+        # 利用iou进行赋值 
         if return_iou:
             encoded_box[:, -1][assign_mask] = iou[assign_mask]
         
         # 找到对应的先验框
         assigned_priors = self.priors[assign_mask]
-        # 逆向编码，将真实框转化为ssd预测结果的格式
 
-        # 先计算真实框的中心与长宽
-        box_center = 0.5 * (box[:2] + box[2:])
-        box_wh = box[2:] - box[:2]
-        # 再计算重合度较高的先验框的中心与长宽
+        #---------------------------------------------#
+        #   逆向编码，将真实框转化为ssd预测结果的格式
+        #   先计算真实框的中心与长宽
+        #---------------------------------------------#
+        box_center  = 0.5 * (box[:2] + box[2:])
+        box_wh      = box[2:] - box[:2]
+        #---------------------------------------------#
+        #   再计算重合度较高的先验框的中心与长宽
+        #---------------------------------------------#
         assigned_priors_center = 0.5 * (assigned_priors[:, :2] +
                                         assigned_priors[:, 2:4])
         assigned_priors_wh = (assigned_priors[:, 2:4] -
                               assigned_priors[:, :2])
         
-        # 逆向求取ssd应该有的预测结果
+        #------------------------------------------------#
+        #   逆向求取ssd应该有的预测结果
+        #   先求取中心的预测结果，再求取宽高的预测结果
+        #   存在改变数量级的参数，默认为[0.1,0.1,0.2,0.2]
+        #------------------------------------------------#
         encoded_box[:, :2][assign_mask] = box_center - assigned_priors_center
         encoded_box[:, :2][assign_mask] /= assigned_priors_wh
-        # 除以0.1
         encoded_box[:, :2][assign_mask] /= assigned_priors[:, -4:-2]
 
         encoded_box[:, 2:4][assign_mask] = np.log(box_wh / assigned_priors_wh)
-        # 除以0.2
         encoded_box[:, 2:4][assign_mask] /= assigned_priors[:, -2:]
         return encoded_box.ravel()
 
     def assign_boxes(self, boxes):
-        assignment = np.zeros((self.num_priors, 4 + self.num_classes + 1))
+        #---------------------------------------------------#
+        #   assignment分为3个部分
+        #   :4      的内容为网络应该有的回归预测结果
+        #   4:-8    的内容为先验框所对应的种类，默认为背景
+        #   -8      的内容为当前先验框是否包含目标
+        #   -7:     无意义
+        #---------------------------------------------------#
+        assignment = np.zeros((self.num_priors, 4 + self.num_classes + 8))
         assignment[:, 4] = 1.0
         if len(boxes) == 0:
             return assignment
+
         # 对每一个真实框都进行iou计算
         encoded_boxes = np.apply_along_axis(self.encode_box, 1, boxes[:, :4])
-        # 每一个真实框的编码后的值，和iou
+        #---------------------------------------------------#
+        #   在reshape后，获得的encoded_boxes的shape为：
+        #   [num_true_box, num_priors, 4+1]
+        #   4是编码后的结果，1为iou
+        #---------------------------------------------------#
         encoded_boxes = encoded_boxes.reshape(-1, self.num_priors, 5)
         
-        # 取重合程度最大的先验框，并且获取这个先验框的index
+        #---------------------------------------------------#
+        #   [num_priors]求取每一个先验框重合度最大的真实框
+        #---------------------------------------------------#
         best_iou = encoded_boxes[:, :, -1].max(axis=0)
         best_iou_idx = encoded_boxes[:, :, -1].argmax(axis=0)
         best_iou_mask = best_iou > 0
         best_iou_idx = best_iou_idx[best_iou_mask]
-
+        
+        #---------------------------------------------------#
+        #   计算一共有多少先验框满足需求
+        #---------------------------------------------------#
         assign_num = len(best_iou_idx)
-        # 保留重合程度最大的先验框的应该有的预测结果
+
+        # 将编码后的真实框取出
         encoded_boxes = encoded_boxes[:, best_iou_mask, :]
         assignment[:, :4][best_iou_mask] = encoded_boxes[best_iou_idx,np.arange(assign_num),:4]
-        # 4代表为背景的概率，为0
+        #----------------------------------------------------------#
+        #   4代表为背景的概率，设定为0，因为这些先验框有对应的物体
+        #----------------------------------------------------------#
         assignment[:, 4][best_iou_mask] = 0
-        assignment[:, 5:-1][best_iou_mask] = boxes[best_iou_idx, 4:]
-        assignment[:, -1][best_iou_mask] = 1
+        assignment[:, 5:-8][best_iou_mask] = boxes[best_iou_idx, 4:]
+        #----------------------------------------------------------#
+        #   -8表示先验框是否有对应的物体
+        #----------------------------------------------------------#
+        assignment[:, -8][best_iou_mask] = 1
         # 通过assign_boxes我们就获得了，输入进来的这张图片，应该有的预测结果是什么样子的
         return assignment
 
@@ -286,25 +203,42 @@ class BBoxUtility(object):
         decode_bbox = np.minimum(np.maximum(decode_bbox, 0.0), 1.0)
         return decode_bbox
 
-    def detection_out(self, predictions, background_label_id=0, keep_top_k=200,
-                      confidence_threshold=0.5):
-        # 网络预测的结果
+    def detection_out(self, predictions, background_label_id=0, keep_top_k=200, confidence_threshold=0.5):
+        #---------------------------------------------------#
+        #   :4是回归预测结果
+        #---------------------------------------------------#
         mbox_loc = predictions[:, :, :4]
-        # 0.1，0.1，0.2，0.2
-        variances = predictions[:, :, -4:]
-        # 先验框
-        mbox_priorbox = predictions[:, :, -8:-4]
-        # 置信度
+        #---------------------------------------------------#
+        #   获得种类的置信度
+        #---------------------------------------------------#
         mbox_conf = predictions[:, :, 4:-8]
+        #---------------------------------------------------#
+        #   获得网络的先验框
+        #---------------------------------------------------#
+        mbox_priorbox = predictions[:, :, -8:-4]
+        #---------------------------------------------------#
+        #   variances是一个改变数量级的参数。
+        #   所有variances全去了也可以训练，有了效果更好。
+        #---------------------------------------------------#
+        variances = predictions[:, :, -4:]
+
         results = []
-        # 对每一个特征层进行处理
+
+        # 对每一张图片进行处理，由于在predict.py的时候，我们只输入一张图片，所以for i in range(len(mbox_loc))只进行一次
         for i in range(len(mbox_loc)):
             results.append([])
+            #--------------------------------#
+            #   利用回归结果对先验框进行解码
+            #--------------------------------#
             decode_bbox = self.decode_boxes(mbox_loc[i], mbox_priorbox[i],  variances[i])
 
             for c in range(self.num_classes):
                 if c == background_label_id:
                     continue
+                #--------------------------------#
+                #   取出属于该类的所有框的置信度
+                #   判断是否大于门限
+                #--------------------------------#
                 c_confs = mbox_conf[i, :, c]
                 c_confs_m = c_confs > confidence_threshold
                 if len(c_confs[c_confs_m]) > 0:
@@ -324,6 +258,7 @@ class BBoxUtility(object):
                                             axis=1)
                     # 添加进result里
                     results[-1].extend(c_pred)
+
             if len(results[-1]) > 0:
                 # 按照置信度进行排序
                 results[-1] = np.array(results[-1])
