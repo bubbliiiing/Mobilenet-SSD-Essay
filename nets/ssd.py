@@ -18,7 +18,7 @@ def SSD300(input_shape, num_classes=21, anchors_size=[30,60,111,162,213,264,315]
     net = mobilenet(input_tensor)
     #-----------------------将提取到的主干特征进行处理---------------------------#
     # 对conv4_3的通道进行l2标准化处理 
-    # 38,38,512
+    # 19,19,512
     net['conv4_3_norm'] = Normalize(20, name='conv4_3_norm')(net['conv4_3'])
     num_priors = 4
     # 预测框的处理
@@ -35,7 +35,7 @@ def SSD300(input_shape, num_classes=21, anchors_size=[30,60,111,162,213,264,315]
     net['conv4_3_norm_mbox_priorbox'] = priorbox(net['conv4_3_norm'])
     
     # 对fc7层进行处理 
-    # 19,19,1024
+    # 10,10,1024
     num_priors = 6
     # 预测框的处理
     # num_priors表示每个网格点先验框的数量，4是x,y,h,w的调整
@@ -51,7 +51,7 @@ def SSD300(input_shape, num_classes=21, anchors_size=[30,60,111,162,213,264,315]
     net['fc7_mbox_priorbox'] = priorbox(net['fc7'])
 
     # 对conv6_2进行处理
-    # 10,10,512
+    # 5,5,512
     num_priors = 6
     # 预测框的处理
     # num_priors表示每个网格点先验框的数量，4是x,y,h,w的调整
@@ -69,7 +69,7 @@ def SSD300(input_shape, num_classes=21, anchors_size=[30,60,111,162,213,264,315]
     net['conv6_2_mbox_priorbox'] = priorbox(net['conv6_2'])
 
     # 对conv7_2进行处理
-    # 5,5,256
+    # 3,3,256
     num_priors = 6
     # 预测框的处理
     # num_priors表示每个网格点先验框的数量，4是x,y,h,w的调整
@@ -87,7 +87,7 @@ def SSD300(input_shape, num_classes=21, anchors_size=[30,60,111,162,213,264,315]
     net['conv7_2_mbox_priorbox'] = priorbox(net['conv7_2'])
 
     # 对conv8_2进行处理
-    # 3,3,256
+    # 2,2,256
     num_priors = 6
     # 预测框的处理
     # num_priors表示每个网格点先验框的数量，4是x,y,h,w的调整
@@ -146,13 +146,9 @@ def SSD300(input_shape, num_classes=21, anchors_size=[30,60,111,162,213,264,315]
                                   net['conv9_2_mbox_priorbox']],
                                   axis=1, name='mbox_priorbox')
 
-    # 8732,4
     net['mbox_loc'] = Reshape((-1, 4),name='mbox_loc_final')(net['mbox_loc'])
-    # 8732,21
     net['mbox_conf'] = Reshape((-1, num_classes),name='mbox_conf_logits')(net['mbox_conf'])
-    # 8732,8
     net['mbox_conf'] = Activation('softmax',name='mbox_conf_final')(net['mbox_conf'])
-    # 8732,33
     net['predictions'] = concatenate([net['mbox_loc'],
                                     net['mbox_conf'],
                                     net['mbox_priorbox']],
