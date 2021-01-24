@@ -15,7 +15,11 @@
 ### 性能情况
 | 训练数据集 | 权值文件名称 | 测试数据集 | 输入图片大小 | mAP 0.5:0.95 | mAP 0.5 |
 | :-----: | :-----: | :------: | :------: | :------: | :-----: |
-| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 76.78
+| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 68.87
+我参考了如下两个库：  
+https://github.com/FreeApe/VGG-or-MobileNet-SSD  
+https://github.com/chuanqi305/MobileNet-SSD  
+在没有coco预训练权重的时候，SSD使用VOC07+12训练后，在VOC-Test07的mAP为68.87是正常的，论文中实现的72.7是有使用coco预训练权重的。
 
 ### 所需环境
 tensorflow-gpu==1.13.1  
