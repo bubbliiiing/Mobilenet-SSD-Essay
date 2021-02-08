@@ -15,7 +15,7 @@
 ## 性能情况
 | 训练数据集 | 权值文件名称 | 测试数据集 | 输入图片大小 | mAP 0.5:0.95 | mAP 0.5 |
 | :-----: | :-----: | :------: | :------: | :------: | :-----: |
-| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 69.28 |
+| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 70.66 |
 
 我参考了如下两个库：  
 https://github.com/FreeApe/VGG-or-MobileNet-SSD  
