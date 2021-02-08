@@ -20,7 +20,7 @@
 我参考了如下两个库：  
 https://github.com/FreeApe/VGG-or-MobileNet-SSD  
 https://github.com/chuanqi305/MobileNet-SSD  
-在没有coco预训练权重的时候，SSD使用VOC07+12训练后，在VOC-Test07的mAP为69.28是正常的，论文中实现的72.7是有使用coco预训练权重的。
+在没有coco预训练权重的时候，SSD使用VOC07+12训练后，在VOC-Test07的mAP为70.66是正常的，论文中实现的72.7是有使用coco预训练权重的。
 
 ## 所需环境
 tensorflow-gpu==1.13.1  
