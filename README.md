@@ -1,6 +1,9 @@
 ## Mobilenet-SSD：轻量级目标检测模型在Keras当中的实现（论文版）
 ---
 
+**2021年2月8日更新：**   
+**加入letterbox_image的选项，关闭letterbox_image后网络的map一般可以得到提升。**
+
 ## 嘟嘟嘟为什么要再弄一个版本的Mobilenet-SSD
 之前实现了一个版本的mobilenet-SSD，有小伙伴告诉我说这个不是原版的Mobilenet-ssd的结构，然后我去网上查了一下，好像还真不是，原版的Mobilenet-ssd不利用38x38的特征层进行回归预测和分类预测，因此我就制作了这个版本，填一下坑。
 
