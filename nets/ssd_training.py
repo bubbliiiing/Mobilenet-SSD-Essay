@@ -11,6 +11,7 @@ from keras import backend as K
 from keras.applications.imagenet_utils import preprocess_input
 from PIL import Image
 
+
 class MultiboxLoss(object):
     def __init__(self, num_classes, alpha=1.0, neg_pos_ratio=3.0,
                  background_label_id=0, negatives_for_hard=100.0):
