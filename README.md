@@ -33,7 +33,7 @@ tensorflow-gpu==1.13.1
 keras==2.1.5  
 
 ## 文件下载
-训练所需的essay_mobilenet_ssd_weights可以在百度云下载。  
+训练所需的essay_mobilenet_ssd_weights和主干的权值可以在百度云下载。  
 链接: https://pan.baidu.com/s/1Pox_HEwrMrXR1JZqE-1EGQ   
 提取码: tacx  
 
