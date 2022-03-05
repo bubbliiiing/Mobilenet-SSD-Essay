@@ -21,12 +21,12 @@
 ## 性能情况
 | 训练数据集 | 权值文件名称 | 测试数据集 | 输入图片大小 | mAP 0.5:0.95 | mAP 0.5 |
 | :-----: | :-----: | :------: | :------: | :------: | :-----: |
-| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 70.66 |
+| VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 71.48 |
 
 我参考了如下两个库：  
 https://github.com/FreeApe/VGG-or-MobileNet-SSD  
 https://github.com/chuanqi305/MobileNet-SSD  
-在没有coco预训练权重的时候，SSD使用VOC07+12训练后，在VOC-Test07的mAP为70.66是正常的，论文中实现的72.7是有使用coco预训练权重的。
+在没有coco预训练权重的时候，SSD使用VOC07+12训练后，在VOC-Test07的mAP为71.48是正常的，论文中实现的72.7是有使用coco预训练权重的。
 
 ## 所需环境
 tensorflow-gpu==1.13.1  
@@ -34,8 +34,8 @@ keras==2.1.5
 
 ## 文件下载
 训练所需的essay_mobilenet_ssd_weights和主干的权值可以在百度云下载。  
-链接: https://pan.baidu.com/s/1Pox_HEwrMrXR1JZqE-1EGQ   
-提取码: tacx  
+链接: https://pan.baidu.com/s/1QPUpVuxPGrCrALPoEUONLA   
+提取码: fi4s    
 
 VOC数据集下载地址如下，里面已经包括了训练集、测试集、验证集（与测试集一样），无需再次划分：  
 链接: https://pan.baidu.com/s/1YuBbBKxm2FGgTU5OfaeC5A    
