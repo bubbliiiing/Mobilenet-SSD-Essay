@@ -1,32 +1,36 @@
 ## Mobilenet-SSD：轻量级目标检测模型在Keras当中的实现（论文版）
 ---
 
-**2021年10月12日更新：**   
-**进行了大幅度的更新，对代码的模块进行修改，加了大量注释。**   
-
-**2021年2月8日更新：**   
-**加入letterbox_image的选项，关闭letterbox_image后网络的map一般可以得到提升。**
-
 之前实现了一个版本的mobilenet-SSD，有小伙伴告诉我说这个不是原版的Mobilenet-ssd的结构，然后我去网上查了一下，好像还真不是，原版的Mobilenet-ssd不利用38x38的特征层进行回归预测和分类预测，因此我就制作了这个版本，填一下坑。
 
 ## 目录
-1. [性能情况 Performance](#性能情况)
-2. [所需环境 Environment](#所需环境)
-3. [文件下载 Download](#文件下载)
-4. [训练步骤 How2train](#训练步骤)
-5. [预测步骤 How2predict](#预测步骤)
-6. [评估步骤 How2eval](#评估步骤)
-7. [参考资料 Reference](#Reference)
+1. [仓库更新 Top News](#仓库更新)
+2. [相关仓库 Related code](#相关仓库)
+3. [性能情况 Performance](#性能情况)
+4. [所需环境 Environment](#所需环境)
+5. [文件下载 Download](#文件下载)
+6. [训练步骤 How2train](#训练步骤)
+7. [预测步骤 How2predict](#预测步骤)
+8. [评估步骤 How2eval](#评估步骤)
+9. [参考资料 Reference](#Reference)
+
+## Top News
+**`2022-03`**:**进行了大幅度的更新，支持step、cos学习率下降法、支持adam、sgd优化器选择、支持学习率根据batch_size自适应调整、新增图片裁剪。**  
+BiliBili视频中的原仓库地址为：https://github.com/bubbliiiing/ssd-keras/tree/bilibili
+
+**`2021-10`**:**进行了大幅度的更新，增加了大量注释、增加了大量可调整参数、对代码的组成模块进行修改、增加fps、视频预测、批量预测等功能。**   
+
+## 相关仓库
+| 模型 | 路径 |
+| :----- | :----- |
+ssd-keras | https://github.com/bubbliiiing/ssd-keras
+mobilenet-ssd-keras | https://github.com/bubbliiiing/mobilenet-ssd-keras
+Mobilenet-SSD-Essay | https://github.com/bubbliiiing/Mobilenet-SSD-Essay
 
 ## 性能情况
 | 训练数据集 | 权值文件名称 | 测试数据集 | 输入图片大小 | mAP 0.5:0.95 | mAP 0.5 |
 | :-----: | :-----: | :------: | :------: | :------: | :-----: |
 | VOC07+12 | [essay_mobilenet_ssd_weights.h5](https://github.com/bubbliiiing/Mobilenet-SSD-Essay/releases/download/v1.0/essay_mobilenet_ssd_weights.h5) | VOC-Test07 | 300x300| - | 71.48 |
-
-我参考了如下两个库：  
-https://github.com/FreeApe/VGG-or-MobileNet-SSD  
-https://github.com/chuanqi305/MobileNet-SSD  
-在没有coco预训练权重的时候，SSD使用VOC07+12训练后，在VOC-Test07的mAP为71.48是正常的，论文中实现的72.7是有使用coco预训练权重的。
 
 ## 所需环境
 tensorflow-gpu==1.13.1  
